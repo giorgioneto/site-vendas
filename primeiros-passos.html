@@ -230,6 +230,17 @@
   .btn-wa-outline:hover{background:rgba(255,255,255,.25);transform:translateY(-2px)}
   .btn-wa-outline svg{width:17px;height:17px;stroke:#fff;fill:none}
 
+  /* Mobile tip */
+  .mobile-tip{
+    display:none;
+    align-items:center;gap:11px;
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:13px 16px;margin-bottom:16px;font-size:.84rem;color:var(--muted);
+    box-shadow:var(--shadow-sm);
+  }
+  .mobile-tip svg{width:18px;height:18px;stroke:var(--green);flex-shrink:0}
+  @media(max-width:768px){.mobile-tip{display:flex}}
+
   /* Responsive */
   @media(max-width:600px){
     body{padding:16px 12px 48px}
@@ -252,6 +263,12 @@
     <h1>Primeiros passos</h1>
     <p>Complete as etapas abaixo para deixar seu negócio 100% pronto para o primeiro disparo de avaliações.</p>
   </div>
+</div>
+
+<!-- MOBILE TIP -->
+<div class="mobile-tip">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <span>No celular, acesse o menu de navegação pelo ícone <strong>☰</strong> no canto superior esquerdo da tela.</span>
 </div>
 
 <!-- PROGRESS TRACKER -->
