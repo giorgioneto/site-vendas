@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primeiros Passos — Visão Negócio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#2EAD4B;
+    --green-dark:#1E8C39;
+    --green-soft:#E7F6EA;
+    --gold:#F4B400;
+    --red:#E8473F;
+    --ink:#24262B;
+    --muted:#5C6066;
+    --cream:#FBFBF2;
+    --line:#ECECE3;
+    --radius:18px;
+    --shadow-sm:0 4px 18px rgba(36,38,43,.06);
+    --shadow-md:0 14px 40px rgba(36,38,43,.10);
+    --shadow-lg:0 30px 70px rgba(30,140,57,.18);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  button{color:inherit}
+  html{scroll-behavior:smooth}
+  body{font-family:'Poppins',sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{line-height:1.12}
+  .display{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;text-transform:none}
+  a{text-decoration:none;color:inherit}
+  img{max-width:100%;display:block}
+  .wrap{width:min(1180px,92%);margin-inline:auto}
+  .grad-text{background:linear-gradient(95deg,var(--green) 0%,var(--green-dark) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  /* Tribar */
+  .tribar{height:8px;width:100%;display:flex}
+  .tribar i{flex:1}
+  .tribar i:nth-child(1){background:var(--green)}
+  .tribar i:nth-child(2){background:var(--gold)}
+  .tribar i:nth-child(3){background:var(--red)}
+
+  /* Logo */
+  .logo{display:flex;align-items:center;font-weight:700;font-size:1.42rem;letter-spacing:-.3px;cursor:pointer}
+  .logo .mark{width:40px;height:33px;flex-shrink:0;margin-right:-5px;margin-top:-5px}
+  .logo .vis{color:var(--green);font-weight:800}
+  .logo .neg{color:var(--ink);font-weight:500;margin-left:7px}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:50;background:rgba(251,251,242,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .nav-links{display:flex;gap:30px;align-items:center;list-style:none}
+  .nav-links a{font-size:.93rem;color:var(--muted);font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--green)}
+  .nav-link{font-size:.93rem;color:var(--muted);font-weight:500;transition:color .2s;background:none;border:none;cursor:pointer;font-family:'Poppins',sans-serif;padding:0}
+  .nav-link:hover{color:var(--green)}
+  .foot-link{display:block;color:var(--muted);font-size:.92rem;padding:6px 0;transition:color .2s;background:none;border:none;cursor:pointer;font-family:'Poppins',sans-serif;text-align:left;width:100%}
+  .foot-link:hover{color:var(--green)}
+  .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;font-family:'Poppins',sans-serif;font-weight:600;font-size:.95rem;padding:13px 26px;border-radius:50px;border:none;cursor:pointer;transition:transform .2s ease,box-shadow .25s ease,background .25s;}
+  .btn-primary{background:linear-gradient(120deg,var(--green),var(--green-dark));color:#fff !important;box-shadow:0 10px 24px rgba(46,173,75,.32)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(46,173,75,.42)}
+  .btn-ghost{background:#fff;color:var(--green-dark) !important;border:1.5px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--green);transform:translateY(-2px)}
+  .btn-white{background:#fff;color:var(--green-dark)}
+  .btn-white:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+  .btn-wa{background:rgba(255,255,255,.14);color:#fff !important;border:1.5px solid rgba(255,255,255,.75);backdrop-filter:blur(4px)}
+  .btn-wa svg{width:19px;height:19px;stroke:currentColor}
+  .btn-wa:hover{background:#fff;color:#1E8C39 !important;transform:translateY(-3px);box-shadow:var(--shadow-md)}
+  .menu-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px}
+  .menu-toggle span{width:24px;height:2.5px;background:var(--ink);border-radius:2px;transition:.3s}
+
+  /* Pill */
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;background:#fff;border:1px solid var(--line);color:var(--green-dark);padding:8px 16px;border-radius:50px;box-shadow:var(--shadow-sm);margin-bottom:24px;}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(46,173,75,.18)}
+
+  /* Section base */
+  section{padding:84px 0}
+  section[id]{scroll-margin-top:84px}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 54px}
+  .eyebrow{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.9rem,3.6vw,2.9rem);font-weight:800;letter-spacing:-1px;margin-bottom:16px}
+  .sec-head p{color:var(--muted);font-size:1.05rem}
+
+  /* Hero */
+  .hero{position:relative;padding:80px 0 70px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(60% 55% at 12% 18%,rgba(46,173,75,.16),transparent 60%),radial-gradient(55% 50% at 92% 8%,rgba(244,180,0,.16),transparent 60%);}
+  .hero-center{text-align:center;max-width:760px;margin:0 auto}
+  .hero-center h1{font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:800;letter-spacing:-1.5px;margin-bottom:20px}
+  .hero-center p.lead{font-size:1.1rem;color:var(--muted);margin-bottom:32px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+
+  /* Progress dots */
+  .progress-steps{display:flex;align-items:center;justify-content:center;gap:0;margin:48px auto 0;max-width:680px}
+  .ps-item{display:flex;align-items:center;flex:1}
+  .ps-dot{width:36px;height:36px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-family:'Anton';font-size:.9rem;color:var(--muted);flex-shrink:0;position:relative;z-index:1;transition:.3s}
+  .ps-dot.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 0 5px rgba(46,173,75,.18)}
+  .ps-dot.optional{background:var(--gold);border-color:var(--gold);color:#fff}
+  .ps-line{flex:1;height:2px;background:var(--line)}
+  .ps-label{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-size:.62rem;font-weight:600;color:var(--muted);white-space:nowrap;text-align:center}
+  .ps-dot.active .ps-label{color:var(--green-dark)}
+  .ps-dot.optional .ps-label{color:#b48000}
+
+  /* Timeline */
+  .steps-section{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 0}
+  .steps-timeline{position:relative;display:flex;flex-direction:column;gap:0}
+  .steps-timeline::before{content:"";position:absolute;left:52px;top:24px;bottom:24px;width:2px;background:linear-gradient(to bottom,var(--green),var(--gold),var(--green-dark));opacity:.25;z-index:0}
+
+  .step{display:grid;grid-template-columns:80px 1fr;gap:28px;align-items:flex-start;padding:32px 0;position:relative}
+  .step+.step{border-top:1px solid var(--line)}
+
+  .step-num-col{display:flex;flex-direction:column;align-items:center;gap:0;padding-top:4px}
+  .step-number{font-family:'Anton';font-size:2.2rem;line-height:1;color:var(--green);background:var(--green-soft);width:52px;height:52px;border-radius:14px;display:grid;place-items:center;border:2px solid rgba(46,173,75,.2);position:relative;z-index:1;flex-shrink:0}
+  .step-number.gold-num{color:#b48000;background:rgba(244,180,0,.1);border-color:rgba(244,180,0,.3)}
+
+  .step-card{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:28px 30px;position:relative}
+  .step-card:hover{box-shadow:var(--shadow-sm)}
+
+  .step-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+  .step-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(46,173,75,.15),rgba(244,180,0,.12));display:grid;place-items:center;flex-shrink:0}
+  .step-icon svg{width:22px;height:22px;stroke:var(--green-dark)}
+  .step-icon.gold-ic{background:rgba(244,180,0,.14)}
+  .step-icon.gold-ic svg{stroke:#b48000}
+  .step-title{font-size:1.15rem;font-weight:700}
+  .step-badge-optional{font-size:.65rem;font-weight:700;letter-spacing:.5px;background:rgba(244,180,0,.15);color:#b48000;border:1px solid rgba(244,180,0,.35);padding:4px 11px;border-radius:30px;text-transform:uppercase}
+  .step-desc{color:var(--muted);font-size:.95rem;margin-bottom:18px}
+  .step-url{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;background:#fff;border:1px solid var(--line);padding:6px 14px;border-radius:30px;color:var(--muted);margin-bottom:14px}
+  .step-url svg{width:13px;height:13px;stroke:var(--green);flex-shrink:0}
+
+  /* Field list */
+  .field-group{margin-bottom:16px}
+  .field-group-title{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-dark);margin-bottom:10px}
+  .field-list{display:flex;flex-wrap:wrap;gap:8px}
+  .field-tag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:30px;padding:6px 14px;font-size:.84rem;color:var(--ink)}
+  .field-tag svg{width:14px;height:14px;stroke:var(--green);flex-shrink:0}
+  .field-tag.optional-tag{border-color:rgba(244,180,0,.4);background:rgba(244,180,0,.06);color:#8a6400}
+  .field-tag.optional-tag svg{stroke:var(--gold)}
+
+  /* Tip box */
+  .tip-box{background:var(--green-soft);border:1px solid rgba(46,173,75,.25);border-radius:12px;padding:14px 16px;display:flex;gap:11px;align-items:flex-start;margin-top:16px;font-size:.88rem;color:var(--ink)}
+  .tip-box svg{width:18px;height:18px;stroke:var(--green-dark);flex-shrink:0;margin-top:2px}
+  .tip-box.gold-tip{background:rgba(244,180,0,.08);border-color:rgba(244,180,0,.3)}
+  .tip-box.gold-tip svg{stroke:#b48000}
+
+  /* Sub-steps tabs */
+  .sub-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+  .sub-tab{padding:8px 18px;border-radius:30px;font-size:.84rem;font-weight:600;border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--muted);transition:.2s;font-family:'Poppins',sans-serif}
+  .sub-tab.active{background:var(--green);border-color:var(--green);color:#fff}
+  .sub-panel{display:none}
+  .sub-panel.active{display:block}
+
+  /* Mock login */
+  .mock-login{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;max-width:320px;box-shadow:var(--shadow-sm)}
+  .mock-login .vn-logo{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:22px}
+  .mock-login .vn-logo .mark-sm{width:48px;height:40px}
+  .mock-login .vn-logo span{font-size:1.25rem;font-weight:700}<br>  .mock-login .vn-logo .vis{color:var(--green)}
+  .mock-field{margin-bottom:14px}
+  .mock-field label{font-size:.78rem;font-weight:600;color:var(--ink);display:block;margin-bottom:5px}
+  .mock-input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.88rem;color:var(--muted);background:var(--cream);font-family:'Poppins',sans-serif}
+  .mock-check{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);margin-bottom:18px}
+  .mock-check input{accent-color:var(--green)}
+  .mock-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:11px;font-size:.92rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:default;margin-bottom:10px}
+  .mock-btn-sec{width:100%;background:#1a73e8;color:#fff;border:none;border-radius:10px;padding:11px;font-size:.92rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:default}
+
+  /* Mock dashboard */
+  .mock-dash{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;max-width:520px}
+  .mock-sidebar{width:180px;flex-shrink:0;border-right:1px solid var(--line);padding:16px 0;background:#fff}
+  .mock-sidebar .sb-logo{padding:0 16px 14px;border-bottom:1px solid var(--line);margin-bottom:12px;font-size:.88rem;font-weight:700;display:flex;align-items:center;gap:6px}
+  .mock-sidebar .sb-logo .vis{color:var(--green)}
+  .mock-sidebar-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:.78rem;color:var(--muted);cursor:default}
+  .mock-sidebar-item.active{background:var(--green);color:#fff;border-radius:0}
+  .mock-sidebar-item svg{width:14px;height:14px;stroke:currentColor;flex-shrink:0}
+  .mock-main{flex:1;padding:16px}
+  .mock-progress-bar{height:5px;border-radius:3px;display:flex;margin-bottom:14px;overflow:hidden}
+  .mock-progress-bar i{flex:1}
+  .mock-progress-bar i:nth-child(1){background:var(--green);flex:2}
+  .mock-progress-bar i:nth-child(2){background:var(--gold);flex:1}
+  .mock-progress-bar i:nth-child(3){background:var(--red);flex:1}
+  .mock-progress-label{font-size:.68rem;font-weight:600;color:var(--green-dark);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .mock-main-title{font-size:.88rem;font-weight:700;margin-bottom:10px}
+  .mock-nav-items{display:flex;flex-direction:column;gap:4px}
+  .mock-nav-item{font-size:.72rem;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--line)}
+
+  /* Connection badges */
+  .conn-grid{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+  .conn-item{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;gap:12px}
+  .conn-item .conn-info{display:flex;align-items:center;gap:10px}
+  .conn-item .conn-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+  .conn-item .conn-ic.wa{background:#25d366;color:#fff}
+  .conn-item .conn-ic.em{background:#4285f4;color:#fff}
+  .conn-item .conn-ic svg{width:18px;height:18px;stroke:#fff}
+  .conn-item .conn-label{font-size:.9rem;font-weight:600}
+  .conn-item .conn-sub{font-size:.76rem;color:var(--muted)}
+  .conn-btn{padding:8px 18px;border-radius:30px;font-size:.78rem;font-weight:600;border:none;cursor:default;font-family:'Poppins',sans-serif}
+  .conn-btn.wa-btn{background:#25d366;color:#fff}
+  .conn-btn.em-btn{background:#4285f4;color:#fff}
+
+  /* Follow-up mock */
+  .followup-mock{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px}
+  .followup-msg{background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .followup-msg .fm-head{font-size:.78rem;font-weight:700;color:var(--green-dark);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .followup-msg .fm-row{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .followup-msg .fm-field{flex:1;min-width:120px}
+  .followup-msg .fm-label{font-size:.68rem;font-weight:600;color:var(--muted);margin-bottom:4px}
+  .followup-msg .fm-input{background:#fff;border:1px solid var(--line);border-radius:7px;padding:7px 10px;font-size:.78rem;color:var(--muted);width:100%;font-family:'Poppins',sans-serif}
+  .followup-msg .fm-add{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;color:var(--green-dark);background:var(--green-soft);border:none;border-radius:30px;padding:6px 14px;cursor:default;font-family:'Poppins',sans-serif}
+
+  /* CTA */
+  .cta{position:relative;overflow:hidden}
+  .cta .panel{background:linear-gradient(125deg,var(--green),var(--green-dark));border-radius:30px;padding:62px 50px;text-align:center;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-lg);}
+  .cta .panel::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.08);top:-120px;right:-80px}
+  .cta .panel::after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(244,180,0,.18);bottom:-110px;left:-60px}
+  .cta h2{font-size:clamp(1.9rem,3.6vw,2.8rem);font-weight:800;letter-spacing:-1px;margin-bottom:14px;position:relative}
+  .cta p{font-size:1.08rem;color:rgba(255,255,255,.9);max-width:560px;margin:0 auto 30px;position:relative}
+  .cta .hero-cta{position:relative}
+
+  /* Footer */
+  footer{background:var(--cream);padding:60px 0 0;border-top:1px solid var(--line)}
+  .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:40px;padding-bottom:46px}
+  .foot-grid p{color:var(--muted);font-size:.9rem;margin-top:16px;max-width:300px}
+  .foot-col h5{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink);margin-bottom:16px}
+  .foot-col a{display:block;color:var(--muted);font-size:.92rem;padding:6px 0;transition:color .2s}
+  .foot-address{display:flex;gap:10px;align-items:flex-start;margin-top:18px;color:var(--muted);font-size:.88rem;line-height:1.55;max-width:290px}
+  .foot-address svg{width:18px;height:18px;stroke:var(--green);flex-shrink:0;margin-top:2px}
+  .contact-item{display:flex;gap:11px;align-items:flex-start;padding:7px 0}
+  .contact-item svg{width:17px;height:17px;stroke:var(--green);flex-shrink:0;margin-top:3px}
+  .contact-item a,.contact-item span{color:var(--muted);font-size:.92rem;transition:color .2s;padding:0;display:inline}
+  .contact-item a:hover{color:var(--green)}
+  .foot-col a:hover{color:var(--green)}
+  .foot-bottom{border-top:1px solid var(--line);padding:22px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.84rem;color:var(--muted)}
+  .socials{display:flex;gap:10px}
+  .socials a{width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;transition:.2s}
+  .socials a:hover{border-color:var(--green);transform:translateY(-2px)}
+  .socials svg{width:18px;height:18px;stroke:var(--muted)}
+  .socials a:hover svg{stroke:var(--green)}
+
+  /* Reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* Responsive */
+  @media(max-width:920px){
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .mock-dash{flex-direction:column}
+    .mock-sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line)}
+    .progress-steps{gap:0}
+    .ps-label{display:none}
+  }
+  @media(max-width:640px){
+    .nav-links{position:absolute;top:72px;left:0;right:0;background:#fff;flex-direction:column;padding:20px;gap:8px;border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm);transform:translateY(-160%);transition:transform .35s;z-index:-1;}
+    .nav-links.open{transform:translateY(0)}
+    .nav-links a{padding:8px 0;width:100%}
+    .menu-toggle{display:flex}
+    .foot-grid{grid-template-columns:1fr}
+    .cta .panel{padding:44px 24px}
+    section{padding:60px 0}
+    .steps-section{padding:60px 0}
+    .step{grid-template-columns:60px 1fr;gap:16px}
+    .steps-timeline::before{left:42px}
+    .step-number{width:42px;height:42px;font-size:1.8rem}
+    .step-card{padding:20px 18px}
+    .progress-steps{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="tribar"><i></i><i></i><i></i></div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vg" x1="20" y1="95" x2="105" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2EAD4B"/>
+            <stop offset="45%" stop-color="#36B24A"/>
+            <stop offset="68%" stop-color="#F4B400"/>
+            <stop offset="100%" stop-color="#E8473F"/>
+          </linearGradient>
+        </defs>
+        <path d="M6 50 C9 44 17 45 22 52 L40 78 C43 82 47 81 50 76 L104 9 C110 2 116 7 109 16 L52 92 C46 99 38 98 33 91 L10 58 C5 51 3 55 6 50 Z" fill="url(#vg)"/>
+      </svg>
+      <span class="vis">isão</span><span class="neg">Negócio</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html#recursos">Recursos</a></li>
+      <li><a href="index.html#inteligencia">Inteligência</a></li>
+      <li><a href="index.html#casos">Casos de uso</a></li>
+      <li><a href="index.html#planos">Planos</a></li>
+      <li><a href="index.html#contato" class="btn btn-primary" style="padding:10px 22px;font-size:.93rem">Teste grátis</a></li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-center reveal">
+    <span class="pill"><span class="dot"></span> Guia passo a passo</span>
+    <h1>Do cadastro ao primeiro disparo <span class="grad-text">em poucos minutos</span></h1>
+    <p class="lead">Siga este guia e configure sua conta do Visão Negócio do zero até estar 100% pronto para enviar sua primeira avaliação aos clientes.</p>
+    <div class="hero-cta">
+      <a href="https://admin.visaonegocio.com/register-business/Plano_Gold" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Começar agora →</a>
+      <a href="index.html#planos" class="btn btn-ghost">Ver planos</a>
+    </div>
+
+    <!-- Progress dots -->
+    <div class="progress-steps">
+      <div class="ps-item">
+        <div class="ps-dot active">1<span class="ps-label">Cadastro</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot active">2<span class="ps-label">Formulário</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot active">3<span class="ps-label">Login</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot active">4<span class="ps-label">Painel</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot active">5<span class="ps-label">Negócio</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot optional">6<span class="ps-label">Formulários</span></div>
+        <div class="ps-line"></div>
+      </div>
+      <div class="ps-item">
+        <div class="ps-dot active">7<span class="ps-label">Parâmetros</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="steps-section">
+  <div class="wrap">
+    <div class="steps-timeline">
+
+      <!-- PASSO 1 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">1</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="step-title">Cadastro do Negócio</h3>
+          </div>
+          <p class="step-desc">Acesse o link de cadastro do seu plano e informe o CPF do administrador para iniciar o processo. O sistema verificará os dados automaticamente.</p>
+          <div class="step-url">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            admin.visaonegocio.com/register-business/Plano_Gold
+          </div>
+          <div class="field-list">
+            <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CPF do Administrador</span>
+          </div>
+          <div class="tip-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            O link de cadastro já vem com o plano selecionado — você não precisa escolher novamente.
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 2 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">2</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3 class="step-title">Preenchimento do formulário</h3>
+          </div>
+          <p class="step-desc">Preencha os dados do administrador e do negócio. Ao final, aceite o termo de consentimento e clique em <strong>Cadastrar</strong>.</p>
+
+          <div class="field-group">
+            <div class="field-group-title">Dados do Administrador</div>
+            <div class="field-list">
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Nome completo</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> E-mail</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CPF (validado ✓)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Telefone</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-group-title">Dados do Negócio</div>
+            <div class="field-list">
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CNPJ (opcional)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Nome do Negócio</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Plano (preenchido automaticamente)</span>
+            </div>
+          </div>
+          <div class="tip-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Leia e aceite o termo de consentimento LGPD antes de clicar em <strong>Cadastrar</strong>.
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 3 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">3</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 class="step-title">Login na plataforma</h3>
+          </div>
+          <p class="step-desc">Após o cadastro, você será redirecionado para a tela de login. Use o e-mail e a senha criados no passo anterior para entrar.</p>
+
+          <div class="mock-login">
+            <div class="vn-logo">
+              <svg class="mark-sm" viewBox="0 0 120 100" fill="none">
+                <defs><linearGradient id="vg2" x1="20" y1="95" x2="105" y2="8" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2EAD4B"/><stop offset="68%" stop-color="#F4B400"/><stop offset="100%" stop-color="#E8473F"/></linearGradient></defs>
+                <path d="M6 50 C9 44 17 45 22 52 L40 78 C43 82 47 81 50 76 L104 9 C110 2 116 7 109 16 L52 92 C46 99 38 98 33 91 L10 58 C5 51 3 55 6 50 Z" fill="url(#vg2)"/>
+              </svg>
+              <span><span class="vis">Visão</span> Negócio</span>
+            </div>
+            <div class="mock-field"><label>E-mail / CPF</label><div class="mock-input">seu@email.com</div></div>
+            <div class="mock-field"><label>Senha</label><div class="mock-input">••••••••••</div></div>
+            <div class="mock-check"><input type="checkbox" checked disabled> Lembre de mim</div>
+            <button class="mock-btn">Entrar</button>
+            <button class="mock-btn-sec">Cadastrar-se</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 4 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">4</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <h3 class="step-title">Painel inicial</h3>
+          </div>
+          <p class="step-desc">Ao entrar, você verá o painel principal com a barra de progresso <strong>"Primeiros passos"</strong> no topo, indicando o quanto da configuração já foi concluída.</p>
+
+          <div class="mock-dash">
+            <div class="mock-sidebar">
+              <div class="sb-logo"><span><span class="vis">V</span>N</span> Visão Negócio</div>
+              <div class="mock-sidebar-item active"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Tela Inicial</div>
+              <div class="mock-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Disparos</div>
+              <div class="mock-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Gráficos</div>
+              <div class="mock-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Avaliações</div>
+              <div class="mock-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Cashbacks</div>
+            </div>
+            <div class="mock-main">
+              <div class="mock-progress-label">● Primeiros passos</div>
+              <div class="mock-progress-bar"><i></i><i></i><i></i></div>
+              <div class="mock-main-title">Bem-vindo ao Visão Negócio!</div>
+              <div class="mock-nav-items">
+                <div class="mock-nav-item">Formulários</div>
+                <div class="mock-nav-item">Parâmetros do Negócio</div>
+                <div class="mock-nav-item">Conexões</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 5 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">5</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+            </div>
+            <h3 class="step-title">Detalhes do Negócio</h3>
+          </div>
+          <p class="step-desc">Clique no ícone de edição (✏️) ao lado do nome do negócio no menu lateral. Preencha todas as informações do seu negócio para completar o perfil.</p>
+
+          <div class="field-group">
+            <div class="field-group-title">Identificação</div>
+            <div class="field-list">
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Logo do negócio</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Nome fantasia</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Descrição</span>
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CNPJ (opcional)</span>
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Razão social (opcional)</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-group-title">Endereço</div>
+            <div class="field-list">
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> CEP</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bairro</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Rua e Número</span>
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Complemento (opcional)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Cidade e Estado (auto)</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-group-title">Avaliação e Redes Sociais</div>
+            <div class="field-list">
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Link do Google (redirecionamento)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Toggle: só avaliações positivas</span>
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Facebook (opcional)</span>
+              <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Instagram (opcional)</span>
+            </div>
+          </div>
+          <div class="tip-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Digite o CEP e a Cidade e o Estado serão preenchidos automaticamente. Não se esqueça de clicar em <strong>Atualizar Negócio</strong> ao final.
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 6 — OPCIONAL -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number gold-num">6</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon gold-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <h3 class="step-title">Formulários de avaliação</h3>
+            <span class="step-badge-optional">Opcional</span>
+          </div>
+          <p class="step-desc">A plataforma já vem com o formulário <strong>NPS</strong> padrão ativo para todos os negócios. Se quiser criar perguntas personalizadas, acesse a seção <strong>Formulários</strong> no menu lateral.</p>
+          <div class="field-list">
+            <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Formulário NPS (padrão — já ativo)</span>
+            <span class="field-tag optional-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Criar formulário personalizado</span>
+          </div>
+          <div class="tip-box gold-tip">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Se não criar um formulário próprio, o NPS padrão será usado automaticamente nos disparos. Você pode criar formulários customizados a qualquer momento.
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSO 7 -->
+      <div class="step reveal">
+        <div class="step-num-col">
+          <div class="step-number">7</div>
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            </div>
+            <h3 class="step-title">Parâmetros do Negócio</h3>
+          </div>
+          <p class="step-desc">Acesse <strong>Parâmetros do Negócio</strong> no menu lateral e configure as três seções abaixo para deixar seu negócio 100% pronto para o primeiro disparo.</p>
+
+          <div class="sub-tabs">
+            <button class="sub-tab active" onclick="showTab(this,'tab-params')">7a — Parâmetros</button>
+            <button class="sub-tab" onclick="showTab(this,'tab-conn')">7b — Conexões</button>
+            <button class="sub-tab" onclick="showTab(this,'tab-auto')">7c — Interações automáticas</button>
+          </div>
+
+          <div class="sub-panel active" id="tab-params">
+            <p class="step-desc" style="margin-bottom:14px">Defina os tempos padrão e a porcentagem de cashback do seu negócio.</p>
+            <div class="field-list" style="margin-bottom:14px">
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tempo de expiração da avaliação (padrão: 2 dias)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tempo de expiração do cashback (padrão: 30 dias)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Formulário padrão de envio (NPS)</span>
+              <span class="field-tag"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Porcentagem do cashback (padrão: 5%)</span>
+            </div>
+            <div class="tip-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Clique em <strong>Salvar</strong> após ajustar os valores.
+            </div>
+          </div>
+
+          <div class="sub-panel" id="tab-conn">
+            <p class="step-desc" style="margin-bottom:14px">Conecte seus canais de envio. O WhatsApp é o canal mais eficaz para disparar avaliações diretamente aos seus clientes.</p>
+            <div class="conn-grid">
+              <div class="conn-item">
+                <div class="conn-info">
+                  <div class="conn-ic wa"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+                  <div>
+                    <div class="conn-label">WhatsApp Principal</div>
+                    <div class="conn-sub">Para envio direto de avaliações</div>
+                  </div>
+                </div>
+                <button class="conn-btn wa-btn">Conectar WhatsApp</button>
+              </div>
+              <div class="conn-item">
+                <div class="conn-info">
+                  <div class="conn-ic wa"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+                  <div>
+                    <div class="conn-label">WhatsApp de Campanha</div>
+                    <div class="conn-sub">Número exclusivo para campanhas e interações automáticas</div>
+                  </div>
+                </div>
+                <button class="conn-btn wa-btn">Conectar</button>
+              </div>
+              <div class="conn-item">
+                <div class="conn-info">
+                  <div class="conn-ic em"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                  <div>
+                    <div class="conn-label">E-mail</div>
+                    <div class="conn-sub">Para vincular respostas dos e-mails enviados</div>
+                  </div>
+                </div>
+                <button class="conn-btn em-btn">Conectar E-mail</button>
+              </div>
+            </div>
+            <div class="tip-box" style="margin-top:16px">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Após conectar o WhatsApp, o canal estará disponível nas Interações Automáticas, além do e-mail.
+            </div>
+          </div>
+
+          <div class="sub-panel" id="tab-auto">
+            <p class="step-desc" style="margin-bottom:14px">Configure mensagens automáticas de follow-up. A primeira mensagem é enviada X dias após a última interação do cliente; as seguintes, X dias após a mensagem anterior.</p>
+            <div class="followup-mock">
+              <div style="display:flex;gap:8px;margin-bottom:4px">
+                <span style="font-size:.78rem;font-weight:700;color:var(--green-dark);background:var(--green-soft);padding:5px 14px;border-radius:30px;border-bottom:2px solid var(--green)">Follow-up</span>
+                <span style="font-size:.78rem;font-weight:600;color:var(--muted);padding:5px 14px;border-radius:30px">Cashback</span>
+              </div>
+              <div class="followup-msg">
+                <div class="fm-head">✉ Mensagem #1</div>
+                <div class="fm-row">
+                  <div class="fm-field"><div class="fm-label">Canal de envio</div><div class="fm-input">WhatsApp / E-mail</div></div>
+                  <div class="fm-field"><div class="fm-label">Formulário</div><div class="fm-input">NPS</div></div>
+                </div>
+                <div class="fm-row">
+                  <div class="fm-field"><div class="fm-label">Enviar após (dias)</div><div class="fm-input">Ex: 30 dias após última interação</div></div>
+                </div>
+                <div class="fm-row">
+                  <div class="fm-field" style="flex:100%"><div class="fm-label">Título / Assunto</div><div class="fm-input">Digite o título ou assunto</div></div>
+                </div>
+                <div class="fm-row">
+                  <div class="fm-field" style="flex:100%"><div class="fm-label">Mensagem</div><div class="fm-input" style="height:52px">Digite a mensagem a ser enviada...</div></div>
+                </div>
+              </div>
+              <button class="fm-add">+ Adicionar Mensagem</button>
+            </div>
+            <div class="tip-box" style="margin-top:16px">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Você pode criar uma sequência de mensagens encadeadas. Use <strong>variáveis dinâmicas</strong> como o nome do cliente para personalizar cada envio.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contato">
+  <div class="wrap reveal">
+    <div class="panel">
+      <h2>Pronto para começar?</h2>
+      <p>Acesse a plataforma, siga este guia e realize seu primeiro disparo ainda hoje. Em minutos o seu negócio estará captando avaliações e fidelizando clientes.</p>
+      <div class="hero-cta">
+        <a href="https://admin.visaonegocio.com" target="_blank" rel="noopener noreferrer" class="btn btn-white">Acessar a plataforma →</a>
+        <a href="https://wa.me/message/DJGZDVFGL222M1" target="_blank" rel="noopener noreferrer" class="btn btn-wa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Falar no WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <a class="logo" href="index.html">
+          <svg class="mark" viewBox="0 0 120 100" fill="none"><path d="M6 50 C9 44 17 45 22 52 L40 78 C43 82 47 81 50 76 L104 9 C110 2 116 7 109 16 L52 92 C46 99 38 98 33 91 L10 58 C5 51 3 55 6 50 Z" fill="url(#vg)"/></svg>
+          <span class="vis">isão</span><span class="neg">Negócio</span>
+        </a>
+        <p>Colaborar para que empreendedores cresçam, fortalecendo sua reputação online, estreitando o relacionamento com clientes e tomando decisões estratégicas baseadas em feedback real.</p>
+        <div class="foot-address">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Avenida Red Park, 230 — Condomínio Red Park<br>Florianópolis – SC, 88060-220, Brasil</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Produto</h5>
+        <a href="index.html#recursos">Recursos</a>
+        <a href="index.html#inteligencia">Inteligência</a>
+        <a href="index.html#casos">Casos de uso</a>
+        <a href="index.html#planos">Planos</a>
+        <a href="primeiros-passos.html">Primeiros passos</a>
+      </div>
+      <div class="foot-col">
+        <h5>Planos</h5>
+        <a href="index.html#planos">Silver</a>
+        <a href="index.html#planos">Gold</a>
+        <a href="index.html#planos">Platino</a>
+        <a href="index.html#contato">Teste grátis</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contato</h5>
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <a href="tel:+554892229532">+55 48 9222-9532</a>
+        </div>
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <a href="https://wa.me/message/DJGZDVFGL222M1" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+        </div>
+        <div class="contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <a href="https://www.visaonegocio.com" target="_blank" rel="noopener noreferrer">www.visaonegocio.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Visão Negócio. Todos os direitos reservados.</span>
+      <div class="socials">
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
+        <a href="https://wa.me/message/DJGZDVFGL222M1" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+        <a href="https://www.visaonegocio.com" target="_blank" rel="noopener noreferrer" aria-label="Site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="tribar"><i></i><i></i><i></i></div>
+</footer>
+
+<script>
+  function showTab(btn, id) {
+    btn.closest('.step-card').querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
+    btn.closest('.step-card').querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  document.getElementById('menuToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  document.querySelectorAll('.logo').forEach(function(el) {
+    el.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function(el, i) {
+    el.style.transitionDelay = (i % 4 * 0.07) + 's';
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
